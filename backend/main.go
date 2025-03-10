@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
@@ -12,6 +13,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
 )
 
@@ -20,6 +22,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error loading .env file: %s", err)
 	}
+
+	DATABASE_URL := os.Getenv("DATABASE_URL")
 	PUBLIC_KEY := os.Getenv("PUBLIC_KEY")
 	PRIVATE_KEY := os.Getenv("PRIVATE_KEY")
 	ts := strconv.FormatInt(time.Now().Unix(), 10)
@@ -53,8 +57,8 @@ func main() {
 			if count == 0 {
 				break
 			}
+			var characters []Character
 			if results, ok := data["results"].([]interface{}); ok {
-				var characters []Character
 				for _, charData := range results {
 					if charMap, ok := charData.(map[string]interface{}); ok {
 						jsonTemp, _ := json.Marshal(charMap)
@@ -78,12 +82,17 @@ func main() {
 	}
 }
 
-func uploadDB() {
-
+func uploadDB(DATABASE_URL string, characters []Character) {
+	conn, err := pgx.Connect(context.Background(), DATABASE_URL)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
+	}
+	defer conn.Close(context.Background())
+	// use dot operator to access struct members
 }
 
 func getHash(ts string, PRIVATE_KEY string, PUBLIC_KEY string) string {
-
 	data := ts + PRIVATE_KEY + PUBLIC_KEY
 	hash := md5.Sum([]byte(data))
 	hashString := hex.EncodeToString(hash[:])
