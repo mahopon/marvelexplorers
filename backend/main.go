@@ -63,19 +63,9 @@ func main() {
 						jsonTemp, _ := json.Marshal(charMap)
 						var character Character
 						json.Unmarshal(jsonTemp, &character)
-						// fmt.Println(character.Comics)
-						// os.Exit(0)
 						characters = append(characters, character)
 					}
 				}
-				// for _, char := range characters {
-				// 	prettyCharacter, err := json.MarshalIndent(char, "", "  ")
-				// 	if err != nil {
-				// 		fmt.Println("Error marshalling character:", err)
-				// 	} else {
-				// 		fmt.Println(string(prettyCharacter))
-				// 	}
-				// }
 				go uploadDB(characters)
 			}
 		}
