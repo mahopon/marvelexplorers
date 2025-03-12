@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 )
 
@@ -52,7 +53,6 @@ func main() {
 
 		if data, ok := result["data"].(map[string]interface{}); ok {
 			count := int(data["count"].(float64))
-			fmt.Println("Hi", count)
 			if count == 0 {
 				break
 			}
@@ -63,17 +63,20 @@ func main() {
 						jsonTemp, _ := json.Marshal(charMap)
 						var character Character
 						json.Unmarshal(jsonTemp, &character)
+						// fmt.Println(character.Comics)
+						// os.Exit(0)
 						characters = append(characters, character)
 					}
 				}
-				for _, char := range characters {
-					prettyCharacter, err := json.MarshalIndent(char, "", "  ")
-					if err != nil {
-						fmt.Println("Error marshalling character:", err)
-					} else {
-						fmt.Println(string(prettyCharacter))
-					}
-				}
+				// for _, char := range characters {
+				// 	prettyCharacter, err := json.MarshalIndent(char, "", "  ")
+				// 	if err != nil {
+				// 		fmt.Println("Error marshalling character:", err)
+				// 	} else {
+				// 		fmt.Println(string(prettyCharacter))
+				// 	}
+				// }
+				go uploadDB(characters)
 			}
 		}
 		offset += 20
@@ -95,20 +98,24 @@ func getHash(ts string, PRIVATE_KEY string, PUBLIC_KEY string) string {
 }
 
 func insertDB(character Character) error {
+	// Set up context
 	ctx := context.Background()
-	conn, err := pgx.Connect(ctx, os.Getenv("DATABASE_URL"))
-	if err != nil {
-		log.Fatalf("Unable to connect to db %+v\n", err)
-	}
-	defer conn.Close(ctx)
 
+	// Connect to the connection pool (create once at the start of your application)
+	connPool, err := pgxpool.New(ctx, os.Getenv("DATABASE_URL"))
+	if err != nil {
+		log.Fatalf("Unable to connect to the database: %+v\n", err)
+	}
+	defer connPool.Close() // Close the pool when done
+
+	// Use the pool to create a batch request
 	batch := &pgx.Batch{}
 
 	// Insert Character
 	batch.Queue(
 		`INSERT INTO Characters (id, name, description, modified, thumbnail_path, thumbnail_extension, resourceURI) 
-         VALUES ($1, $2, $3, $4, $5, $6, $7) 
-         ON CONFLICT (id) DO NOTHING`,
+		 VALUES ($1, $2, $3, $4, $5, $6, $7) 
+		 ON CONFLICT (id) DO NOTHING`,
 		character.ID, character.Name, character.Description, character.Modified,
 		character.Thumbnail.Path, character.Thumbnail.Extension, character.ResourceURI,
 	)
@@ -117,7 +124,7 @@ func insertDB(character Character) error {
 	for _, url := range character.URLs {
 		batch.Queue(
 			`INSERT INTO URLs (character_id, type, url) VALUES ($1, $2, $3) 
-             ON CONFLICT DO NOTHING`,
+			 ON CONFLICT DO NOTHING`,
 			character.ID, url.Type, url.URL,
 		)
 	}
@@ -126,9 +133,9 @@ func insertDB(character Character) error {
 	for _, comic := range character.Comics.Items {
 		batch.Queue(
 			`INSERT INTO Comics (title, collectionURI) 
-             VALUES ($1, $2) 
-             ON CONFLICT (collectionURI) DO NOTHING RETURNING comic_id`,
-			comic.Name, character.Comics.CollectionURI,
+			 VALUES ($1, $2) 
+			 ON CONFLICT (title) DO NOTHING RETURNING comic_id`,
+			comic.Name, comic.ResourceURI,
 		)
 	}
 
@@ -136,9 +143,9 @@ func insertDB(character Character) error {
 	for _, series := range character.Series.Items {
 		batch.Queue(
 			`INSERT INTO Series (title, collectionURI) 
-             VALUES ($1, $2) 
-             ON CONFLICT (collectionURI) DO NOTHING RETURNING series_id`,
-			series.Name, character.Series.CollectionURI,
+			 VALUES ($1, $2) 
+			 ON CONFLICT (title) DO NOTHING RETURNING series_id`,
+			series.Name, series.ResourceURI,
 		)
 	}
 
@@ -146,9 +153,9 @@ func insertDB(character Character) error {
 	for _, story := range character.Stories.Items {
 		batch.Queue(
 			`INSERT INTO Stories (title, type, collectionURI) 
-             VALUES ($1, $2, $3) 
-             ON CONFLICT (collectionURI) DO NOTHING RETURNING story_id`,
-			story.Name, story.Type, character.Stories.CollectionURI,
+			 VALUES ($1, $2, $3) 
+			 ON CONFLICT (title) DO NOTHING RETURNING story_id`,
+			story.Name, story.Type, story.ResourceURI,
 		)
 	}
 
@@ -156,53 +163,61 @@ func insertDB(character Character) error {
 	for _, event := range character.Events.Items {
 		batch.Queue(
 			`INSERT INTO Events (title, collectionURI) 
-             VALUES ($1, $2) 
-             ON CONFLICT (collectionURI) DO NOTHING RETURNING event_id`,
-			event.Name, character.Events.CollectionURI,
+			 VALUES ($1, $2) 
+			 ON CONFLICT (title) DO NOTHING RETURNING event_id`,
+			event.Name, event.ResourceURI,
 		)
 	}
 
 	// Execute batch
-	br := conn.SendBatch(ctx, batch)
+	br := connPool.SendBatch(ctx, batch)
 	defer br.Close()
 
 	// Retrieve IDs for Comics, Series, Stories, and Events
 	var comicIDs []int
-	for range character.Comics.Items {
+	for _, comic := range character.Comics.Items {
 		var comicID int
-		err := br.QueryRow().Scan(&comicID)
+		err := connPool.QueryRow(ctx, "SELECT comic_id FROM Comics WHERE title = $1", comic.Name).Scan(&comicID)
 		if err != nil && err != pgx.ErrNoRows {
 			return fmt.Errorf("error retrieving comic ID: %w", err)
+		} else if err == pgx.ErrNoRows {
+			return fmt.Errorf("no rows")
 		}
 		comicIDs = append(comicIDs, comicID)
 	}
 
 	var seriesIDs []int
-	for range character.Series.Items {
+	for _, series := range character.Series.Items {
 		var seriesID int
-		err := br.QueryRow().Scan(&seriesID)
+		err := connPool.QueryRow(ctx, "SELECT series_id FROM Series WHERE title = $1", series.Name).Scan(&seriesID)
 		if err != nil && err != pgx.ErrNoRows {
 			return fmt.Errorf("error retrieving series ID: %w", err)
+		} else if err == pgx.ErrNoRows {
+			return fmt.Errorf("no rows")
 		}
 		seriesIDs = append(seriesIDs, seriesID)
 	}
 
 	var storyIDs []int
-	for range character.Stories.Items {
+	for _, story := range character.Stories.Items {
 		var storyID int
-		err := br.QueryRow().Scan(&storyID)
+		err := connPool.QueryRow(ctx, "SELECT story_id FROM Stories WHERE title = $1", story.Name).Scan(&storyID)
 		if err != nil && err != pgx.ErrNoRows {
 			return fmt.Errorf("error retrieving story ID: %w", err)
+		} else if err == pgx.ErrNoRows {
+			return fmt.Errorf("no rows")
 		}
 		storyIDs = append(storyIDs, storyID)
 	}
 
 	var eventIDs []int
-	for range character.Events.Items {
+	for _, event := range character.Events.Items {
 		var eventID int
-		err := br.QueryRow().Scan(&eventID)
+		err := connPool.QueryRow(ctx, "SELECT event_id FROM Events WHERE title = $1", event.Name).Scan(&eventID)
 		if err != nil && err != pgx.ErrNoRows {
 			return fmt.Errorf("error retrieving event ID: %w", err)
+		} else if err == pgx.ErrNoRows {
+			return fmt.Errorf("no rows")
 		}
 		eventIDs = append(eventIDs, eventID)
 	}
@@ -210,7 +225,7 @@ func insertDB(character Character) error {
 	// Insert Character_Comics Join Table
 	for _, comicID := range comicIDs {
 		if comicID != 0 {
-			_, err = conn.Exec(ctx,
+			_, err = connPool.Exec(ctx,
 				`INSERT INTO Character_Comics (character_id, comic_id) VALUES ($1, $2) 
                  ON CONFLICT DO NOTHING`,
 				character.ID, comicID,
@@ -224,7 +239,7 @@ func insertDB(character Character) error {
 	// Insert Character_Series Join Table
 	for _, seriesID := range seriesIDs {
 		if seriesID != 0 {
-			_, err = conn.Exec(ctx,
+			_, err = connPool.Exec(ctx,
 				`INSERT INTO Character_Series (character_id, series_id) VALUES ($1, $2) 
                  ON CONFLICT DO NOTHING`,
 				character.ID, seriesID,
@@ -238,7 +253,7 @@ func insertDB(character Character) error {
 	// Insert Character_Stories Join Table
 	for _, storyID := range storyIDs {
 		if storyID != 0 {
-			_, err = conn.Exec(ctx,
+			_, err = connPool.Exec(ctx,
 				`INSERT INTO Character_Stories (character_id, story_id) VALUES ($1, $2) 
                  ON CONFLICT DO NOTHING`,
 				character.ID, storyID,
@@ -252,7 +267,7 @@ func insertDB(character Character) error {
 	// Insert Character_Events Join Table
 	for _, eventID := range eventIDs {
 		if eventID != 0 {
-			_, err = conn.Exec(ctx,
+			_, err = connPool.Exec(ctx,
 				`INSERT INTO Character_Events (character_id, event_id) VALUES ($1, $2) 
                  ON CONFLICT DO NOTHING`,
 				character.ID, eventID,
@@ -262,7 +277,7 @@ func insertDB(character Character) error {
 			}
 		}
 	}
-
+	fmt.Println("Done: ", character.Name)
 	return nil
 }
 

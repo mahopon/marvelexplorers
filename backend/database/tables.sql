@@ -1,5 +1,5 @@
 -- Characters Table
-CREATE TABLE Characters (
+CREATE TABLE IF NOT EXISTS Characters (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255),
     description TEXT,
@@ -10,36 +10,36 @@ CREATE TABLE Characters (
 );
 
 -- Comics Table
-CREATE TABLE Comics (
+CREATE TABLE IF NOT EXISTS Comics (
     comic_id SERIAL PRIMARY KEY,
-    title VARCHAR(255),
+    title VARCHAR(255) UNIQUE,
     collectionURI VARCHAR(255)
 );
 
 -- Series Table
-CREATE TABLE Series (
+CREATE TABLE IF NOT EXISTS Series (
     series_id SERIAL PRIMARY KEY,
-    title VARCHAR(255),
+    title VARCHAR(255) UNIQUE,
     collectionURI VARCHAR(255)
 );
 
 -- Stories Table
-CREATE TABLE Stories (
+CREATE TABLE IF NOT EXISTS Stories (
     story_id SERIAL PRIMARY KEY,
-    title VARCHAR(255),
+    title VARCHAR(255) UNIQUE,
     type VARCHAR(50),
     collectionURI VARCHAR(255)
 );
 
 -- Events Table
-CREATE TABLE Events (
+CREATE TABLE IF NOT EXISTS Events (
     event_id SERIAL PRIMARY KEY,
-    title VARCHAR(255),
+    title VARCHAR(255) UNIQUE,
     collectionURI VARCHAR(255)
 );
 
 -- URLs Table
-CREATE TABLE URLs (
+CREATE TABLE IF NOT EXISTS URLs (
     url_id SERIAL PRIMARY KEY,
     character_id INT REFERENCES Characters(id),
     type VARCHAR(50),
@@ -47,28 +47,28 @@ CREATE TABLE URLs (
 );
 
 -- Join table for Characters and Comics (many-to-many relationship)
-CREATE TABLE Character_Comics (
+CREATE TABLE IF NOT EXISTS Character_Comics (
     character_id INT REFERENCES Characters(id),
     comic_id INT REFERENCES Comics(comic_id),
     PRIMARY KEY (character_id, comic_id)
 );
 
 -- Join table for Characters and Series (many-to-many relationship)
-CREATE TABLE Character_Series (
+CREATE TABLE IF NOT EXISTS Character_Series (
     character_id INT REFERENCES Characters(id),
     series_id INT REFERENCES Series(series_id),
     PRIMARY KEY (character_id, series_id)
 );
 
 -- Join table for Characters and Stories (many-to-many relationship)
-CREATE TABLE Character_Stories (
+CREATE TABLE IF NOT EXISTS Character_Stories (
     character_id INT REFERENCES Characters(id),
     story_id INT REFERENCES Stories(story_id),
     PRIMARY KEY (character_id, story_id)
 );
 
 -- Join table for Characters and Events (many-to-many relationship)
-CREATE TABLE Character_Events (
+CREATE TABLE IF NOT EXISTS Character_Events (
     character_id INT REFERENCES Characters(id),
     event_id INT REFERENCES Events(event_id),
     PRIMARY KEY (character_id, event_id)
