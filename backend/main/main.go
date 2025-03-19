@@ -60,6 +60,6 @@ func main() {
 		fmt.Println("Error:", err)
 		return
 	}
-
+	fmt.Println("Started server on localhost:8000")
 	http.ListenAndServe(":8000", muxWithMiddleware)
 }
