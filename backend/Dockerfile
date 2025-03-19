@@ -2,10 +2,10 @@ FROM golang:1.21 AS builder
 
 WORKDIR /app
 
-COPY backend/go.mod backend/go.sum ./
+COPY go.mod go.sum ./
 RUN go mod download
 
-COPY backend/ .
+COPY . .
 
 RUN go build -o myapp ./main/main.go
 
