@@ -2,7 +2,7 @@ FROM alpine:latest
 
 WORKDIR /root/
 
-COPY marvelexplorers .
+COPY marvelexplorers .env ./
 
 EXPOSE 8000
 
