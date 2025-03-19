@@ -55,7 +55,7 @@ func main() {
 	mux.HandleFunc("/", custom404Handler)
 
 	muxWithMiddleware := logMiddleware(mux)
-	err := godotenv.Load("../.env")
+	err := godotenv.Load(".env")
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
