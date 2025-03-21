@@ -1,7 +1,21 @@
-import React from "react";
+import React,{useState, useEffect, useRef} from "react";
 import CharacterCard from "../components/CharacterCard.tsx";
+import axios from "axios";
+
+const DATA_API = "http://139.59.126.66/characters?offset=";
 
 const Home = () => {
+    const [characters, setCharacters] = useState([]);
+    const offset = useRef(0);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        axios.get(DATA_API+offset.current)
+        .then((res) => {
+            console.log(res);
+            // setCharacters(res)
+        })
+    },offset)
     return (
         <div>
             <h1>Welcome to the Marvel Universe!</h1>
