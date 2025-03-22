@@ -5,6 +5,7 @@ OUTPUT_NAME="marvelexplorers"
 SOURCE_FILE="./main/main.go"
 
 # Ensure the Go environment is set correctly
+export PATH=$PATH:/usr/local/go/bin
 export GOOS=linux
 export GOARCH=amd64
 export CGO_ENABLED=0
