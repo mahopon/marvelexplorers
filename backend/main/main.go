@@ -13,6 +13,7 @@ import (
 	"time"
 )
 
+//go:embed static/*
 var staticFiles embed.FS
 
 func logMiddleware(next http.Handler) http.Handler {
@@ -57,7 +58,7 @@ func faviconHandler(w http.ResponseWriter, r *http.Request) {
 		custom404Handler(w, r)
 		return
 	}
-	data, _ := staticFiles.ReadFile("./static/favicon.ico")
+	data, _ := staticFiles.ReadFile("static/favicon.ico")
 	w.Header().Set("Content-Type", "image/x-icon")
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
