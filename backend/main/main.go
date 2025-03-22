@@ -28,7 +28,7 @@ func custom404Handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func charHandler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/characters" {
+	if r.URL.Path != "/api/characters" {
 		custom404Handler(w, r)
 		return
 	}
@@ -51,7 +51,7 @@ func charHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/characters", charHandler)
+	mux.HandleFunc("/api/characters", charHandler)
 	mux.HandleFunc("/", custom404Handler)
 
 	muxWithMiddleware := logMiddleware(mux)
