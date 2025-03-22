@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"embed"
 	"encoding/json"
 	"fmt"
 	"github.com/joho/godotenv"
@@ -11,6 +12,8 @@ import (
 	"tcy/marvelexplorers/pg"
 	"time"
 )
+
+var staticFiles embed.FS
 
 func logMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -49,10 +52,22 @@ func charHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(output)
 }
 
+func faviconHandler(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/favicon.ico" {
+		custom404Handler(w, r)
+		return
+	}
+	data, _ := staticFiles.ReadFile("./static/favicon.ico")
+	w.Header().Set("Content-Type", "image/x-icon")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/characters", charHandler)
 	mux.HandleFunc("/", custom404Handler)
+	mux.HandleFunc("/favicon.ico", faviconHandler)
 
 	muxWithMiddleware := logMiddleware(mux)
 	err := godotenv.Load(".env")
