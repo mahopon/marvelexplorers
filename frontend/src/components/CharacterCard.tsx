@@ -1,6 +1,7 @@
 import React from 'react'
 
 interface Props {
+    key: string
     name: string,
     description?: string,
     resourceURI: string,
@@ -10,14 +11,14 @@ interface Props {
 
 const CharacterCard = (props: Props) => {
   return (
-    <div className="charCard">
-        <img src={props.thumbnailPath+"."+props.thumbnailExtension} height="150px" width="150px" alt={"Portrait of "+props.name}/>
-        <p>{props.name}</p>
-        {props.description ? (
+    <div className="charCard fade-in">
+        <img className="block" src={props.thumbnailPath+"."+props.thumbnailExtension} alt={"Portrait of "+props.name} loading="eager"/>
+        <p className="inline-block">{props.name}</p>
+        {/* {props.description ? (
         <p>{props.description}</p> // Renders description if it's defined
       ) : (
         <p>No description available.</p> // Renders this if description is undefined
-      )}
+      )} */}
     </div>
   )
 }
