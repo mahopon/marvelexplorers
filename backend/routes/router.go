@@ -7,7 +7,6 @@ import (
 	"tcy/marvelexplorers/middleware"
 
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 )
 
 func Setup() {
@@ -18,13 +17,11 @@ func Setup() {
 
 	apiRouter := r.PathPrefix("/api").Subrouter()
 	RegisterCharacterRoutes(apiRouter)
+	RegisterEventRoutes(apiRouter)
+	RegisterSeriesRoutes(apiRouter)
+	RegisterStoryRoutes(apiRouter)
 
 	muxWithMiddleware := middleware.LogMiddleware(r)
-	err := godotenv.Load(".env")
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
 	fmt.Println("Started server on localhost:8000")
 	http.ListenAndServe(":8000", muxWithMiddleware)
 }

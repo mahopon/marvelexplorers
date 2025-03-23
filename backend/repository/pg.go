@@ -30,6 +30,10 @@ func NewPG(ctx context.Context, connString string) (*postgres, error) {
 	return pgInstance, nil
 }
 
+func GetPG() *postgres {
+	return pgInstance
+}
+
 func (pg *postgres) Ping(ctx context.Context) error {
 	return pg.db.Ping(ctx)
 }
