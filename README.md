@@ -4,7 +4,7 @@ A pet project meant to explore the Marvel Universe
 
 ## Setup
 
-1. This repository contains both frontend and backend code, which is meant to be hosted individually on Docker containers.
+1. This repository contains both frontend and backend code, which is meant to be hosted individually on containers.
 2. NGINX is then used to route to the front and backend.
 
 ## Components
