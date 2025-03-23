@@ -35,13 +35,14 @@
     width:200px;
     filter: grayscale(1);
     min-height: 0; /* Allows scrolling inside a flex/grid container */
-    box-shadow: 4px 4px black;
+    box-shadow: 2px 2x black;
     transition: 0.2s ease;
 }
 
 .charCard:hover {
     transform: translate(-2px, -2px);
     filter: grayscale(0);
+    box-shadow: 4px 4px black;
 }
 
 .charCard img {

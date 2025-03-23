@@ -2,6 +2,7 @@
   "name": "marvelexplorers",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://tcyao.duckdns.org/marvelexplorers",
   "dependencies": {
     "@babel/core": "^7.26.9",
     "@babel/node": "^7.26.0",
