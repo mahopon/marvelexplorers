@@ -1,4 +1,4 @@
-package main
+package scrapping
 
 import (
 	"context"
@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"tcy/marvelexplorers/model"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -56,12 +57,12 @@ func extract() {
 			if count == 0 {
 				break
 			}
-			var characters []Character
+			var characters []model.Character
 			if results, ok := data["results"].([]interface{}); ok {
 				for _, charData := range results {
 					if charMap, ok := charData.(map[string]interface{}); ok {
 						jsonTemp, _ := json.Marshal(charMap)
-						var character Character
+						var character model.Character
 						json.Unmarshal(jsonTemp, &character)
 						characters = append(characters, character)
 					}
@@ -74,7 +75,7 @@ func extract() {
 	}
 }
 
-func uploadDB(characters []Character) {
+func uploadDB(characters []model.Character) {
 	for _, character := range characters {
 		insertDB(character)
 	}
@@ -87,7 +88,7 @@ func getHash(ts string, PRIVATE_KEY string, PUBLIC_KEY string) string {
 	return hashString
 }
 
-func insertDB(character Character) error {
+func insertDB(character model.Character) error {
 	// Set up context
 	ctx := context.Background()
 

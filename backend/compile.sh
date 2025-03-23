@@ -2,7 +2,7 @@
 
 # Define variables
 OUTPUT_NAME="marvelexplorers"
-SOURCE_FILE="./main/main.go"
+SOURCE_FILE="main.go"
 
 # Ensure the Go environment is set correctly
 export PATH=$PATH:/usr/local/go/bin
