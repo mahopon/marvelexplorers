@@ -1,5 +1,5 @@
 import logo from './logo.svg';
-import './App.css';
+import './styles/App.css';
 import Home from "./pages/Home.tsx"
 
 function App() {

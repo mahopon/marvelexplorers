@@ -71,3 +71,7 @@ header {
     color: white;
     letter-spacing: 0.125em;
 }
+
+.flex-container {
+    display: flex;
+}

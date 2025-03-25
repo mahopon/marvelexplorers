@@ -1,24 +1,16 @@
-import React from 'react'
-
-interface Props {
-    key: string
-    name: string,
-    description?: string,
-    resourceURI: string,
-    thumbnailPath: string,
-    thumbnailExtension: string
-}
-
-const CharacterCard = (props: Props) => {
+import React from 'react';
+import {Character} from "../interfaces/CharacterInterface.tsx";
+// Dispatch is type of function that is used to modify state
+// SetStateAction is the action passed to the dispatch to set the new value
+const CharacterCard = ({ character, onClick }: { character: Character, onClick: (char: Character) => void}) => {
+  const handleClick = () => {
+    onClick(character); // Pass the character object to the onClick handler
+    console.log(character);
+  };
   return (
-    <div className="charCard fade-in">
-        <img className="block" src={props.thumbnailPath+"."+props.thumbnailExtension} alt={"Portrait of "+props.name} loading="eager"/>
-        <p className="inline-block">{props.name}</p>
-        {/* {props.description ? (
-        <p>{props.description}</p> // Renders description if it's defined
-      ) : (
-        <p>No description available.</p> // Renders this if description is undefined
-      )} */}
+    <div onClick={handleClick} className="charCard fade-in">
+        <img className="block" src={character.thumbnailPath+"."+character.thumbnailExtension} alt={"Portrait of "+character.name} loading="eager"/>
+        <p className="inline-block">{character.name}</p>
     </div>
   )
 }

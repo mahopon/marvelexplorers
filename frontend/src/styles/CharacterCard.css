@@ -36,6 +36,7 @@
     min-height: 0; /* Allows scrolling inside a flex/grid container */
     box-shadow: 2px 2px black;
     transition: linear 0.2s;
+    cursor: pointer;
 }
 
 .charCard:hover {
@@ -85,23 +86,6 @@ button:hover {
 button.reset {
     margin-left: 0.25em;
     background-color: white;
-}
-
-.fade-in {
-	opacity: 1;
-	animation-name: fadeInOpacity;
-	animation-iteration-count: 1;
-	animation-timing-function: ease-in;
-	animation-duration: 0.5s;
-}
-
-@keyframes fadeInOpacity {
-	0% {
-		opacity: 0;
-	}
-	100% {
-		opacity: 1;
-	}
 }
 
 .fade-out {

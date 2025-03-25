@@ -9,7 +9,7 @@ body {
   margin: 0 auto;
   text-align: center;
   background: linear-gradient(45deg, rgba(0,110,193,0,3), rgba(0,110,193,0.1));
-  background-image: url(./resources/wallpaper.jpg);
+  background-image: url(../resources/wallpaper.jpg);
   background-repeat: no-repeat;
   background-size: cover;
   height: 100vh;

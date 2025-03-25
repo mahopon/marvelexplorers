@@ -1,18 +1,27 @@
 import React,{useState, useEffect, useRef} from "react";
 import CharacterCard from "../components/CharacterCard.tsx";
 import axios from "axios";
-import "../styles/CharacterCard.css"
+import "../styles/animations.css";
+import "../styles/CharacterCard.css";
+import {Character} from "../interfaces/CharacterInterface.tsx"
+import CharacterDetails from "../components/CharacterDetails.tsx";
 
 const DATA_API = "https://tcyao.duckdns.org/api/characters?offset=";
 
 const Home = () => {
-    const [characters, setCharacters] = useState([]);
+    const [characters, setCharacters] = useState<Character[]>([]);
     const [offset, setOffset] = useState(0);
     const allLoaded = useRef(false);
     const [loading, setLoading] = useState(true);
+    const [selectedChar, setSelectedChar] = useState<Character | undefined>(undefined)
 
     const loadMore = (e) => {
         setOffset(offset + 20)
+    }
+
+    const selectChar = (char: Character) => {
+        setSelectedChar(char);
+        console.log(char)
     }
 
     useEffect(() => {
@@ -23,8 +32,18 @@ const Home = () => {
             console.log(res.data);
             if (res.data.length === 0)
                 allLoaded.current = true;
+            let newChars: Character[] = [];
             setTimeout(() => {
-                setCharacters([...characters,...res.data]);
+                for (let newChar of res.data) {
+                    newChars.push({
+                        id: newChar.id,
+                        name: newChar.name,
+                        resourceURI: newChar.resourceuri,
+                        thumbnailExtension: newChar.thumbnail_extension,
+                        thumbnailPath: newChar.thumbnail_path
+                    })
+                }
+                setCharacters([...characters,...newChars]);
                 setLoading(false);
             }, 1000);
         }).catch((err) => {
@@ -45,11 +64,8 @@ const Home = () => {
                     { characters.map((char) => (
                         <CharacterCard
                           key={char.id}
-                          name={char.name}
-                          description={char.description}
-                          resourceURI={char.resourceuri}
-                          thumbnailPath={char.thumbnail_path}
-                          thumbnailExtension={char.thumbnail_extension}
+                          character={char}
+                          onClick={selectChar}
                         />
                     )) }
                     { /* Skeleton loading */
@@ -67,6 +83,12 @@ const Home = () => {
                     </button>
                 )}
             </section>
+            {selectedChar && (
+                <CharacterDetails
+                  character = {selectedChar}
+                  setSelectedChar={setSelectedChar}
+                ></CharacterDetails>
+            )}
         </>
     )
 }
