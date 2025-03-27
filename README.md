@@ -1,13 +1,14 @@
 # Marvel Explorers
 
-A pet project meant to explore the Marvel Universe
+A pet project meant to explore Marvel Comic characters
 
-## Setup
-
-1. This repository contains both frontend and backend code, which is meant to be hosted individually on containers.
-2. NGINX is used to route to the frontend and backend.
-
-## Components
+## Technologies Used
 1. Backend GO HTTP server using Gorilla mux
-2. POSTGRESQL database
-3. Frontend using React
+2. Postgresql database
+3. React
+
+## Deployment
+This project uses Docker to containerize the frontend, backend, and database.
+
+## Notes
+Due to Marvel's API being down as of 28/3/2025, development will have to stop until the API is back up to be scrapped for its data.
