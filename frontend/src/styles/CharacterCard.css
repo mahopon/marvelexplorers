@@ -6,6 +6,8 @@
     padding: 5px;
     border-radius: 10px;
     border: 5px solid white;
+    display: flex;
+    flex-direction: column;
 }
 
 #charSection h2 {
@@ -30,8 +32,10 @@
     border: 1px solid black;
     border-radius: 10px;
     position: relative;
-    height:200px;
-    width:200px;
+    max-width:200px;
+    max-height:200px;
+    height:100%;
+    width:100%;
     filter: grayscale(1);
     min-height: 0; /* Allows scrolling inside a flex/grid container */
     box-shadow: 2px 2px black;
@@ -79,7 +83,7 @@ button {
 }
 
 button:hover {
-    transform: translate(-2px, -2px);
+    transform: translate(-2%, -2px);
     box-shadow: 4px 4px black;
 }
 
@@ -94,6 +98,12 @@ button.reset {
 	animation-iteration-count: 1;
 	animation-timing-function: ease-out;
 	animation-duration: 0.5s;
+}
+
+.load-more {
+    width: 120px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 @keyframes fadeOutOpacity {
