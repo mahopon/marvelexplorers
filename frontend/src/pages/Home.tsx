@@ -10,7 +10,7 @@ import debounce from "../utils/debounce.ts";
 
 const DATA_API = "https://tcyao.duckdns.org/api/characters?offset=";
 
-const Home = () => {
+const Home: React.FC = () => {
     const [characters, setCharacters] = useState<Character[]>([]);
     const [offset, setOffset] = useState(0);
     const allLoaded = useRef(false);
@@ -18,7 +18,7 @@ const Home = () => {
     const [selectedChar, setSelectedChar] = useState<Character | undefined>(undefined)
     const [filteredCharacters, setFilteredCharacters] = useState<Character[]>([]);
 
-    const loadMore = (e) => {
+    const loadMore = () => {
         setOffset(offset + 20)
     }
 

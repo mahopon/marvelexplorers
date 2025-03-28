@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React from 'react'
 import {ISearchBar} from "../interfaces/SearchBarInterface.tsx";
 import "../styles/SearchBar.css";
 
@@ -10,7 +10,7 @@ const SearchBar: React.FC<ISearchBar> = ({onSearch} : {onSearch: (searchTerm: st
     }
 
     const clearInput = () => {
-        const element = document.getElementsByClassName("searchTerm")[0];
+        const element = document.getElementsByClassName("searchTerm")[0] as HTMLInputElement;
         element.value = "";
         onSearch("");
     }

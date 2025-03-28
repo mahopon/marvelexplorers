@@ -1,8 +1,13 @@
 import React from 'react';
 import {Character} from "../interfaces/CharacterInterface.tsx";
+
+interface CharacterProps {
+  character: Character;
+  onClick: (char: Character) => void;
+}
 // Dispatch is type of function that is used to modify state
 // SetStateAction is the action passed to the dispatch to set the new value
-const CharacterCard = ({ character, onClick }: { character: Character, onClick: (char: Character) => void}) => {
+const CharacterCard: React.FC<CharacterProps> = ({ character, onClick }: { character: Character, onClick: (char: Character) => void}) => {
   const handleClick = () => {
     onClick(character); // Pass the character object to the onClick handler
     console.log(character);
