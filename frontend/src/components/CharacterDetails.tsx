@@ -2,9 +2,9 @@ import React from 'react';
 import { Character } from '../interfaces/CharacterInterface';
 import "../styles/CharacterDetails.css";
 
-const CharacterDetails = ({character, setSelectedChar}: {character: Character, setSelectedChar: React.Dispatch<React.SetStateAction<Character | undefined>> }) => {
+const CharacterDetails = ({character, setSelectedChar}: {character: Character, setSelectedChar: React.Dispatch<React.SetStateAction<Character | null>> }) => {
     const handleClick = () => {
-        setSelectedChar(undefined);
+        setSelectedChar(null);
     };
     
   return (
