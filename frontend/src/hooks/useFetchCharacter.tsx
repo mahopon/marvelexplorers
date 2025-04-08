@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import axios from "axios";
 import { Character } from "../interfaces/CharacterInterface.tsx";
 import debounce from "../utils/debounce.ts";
