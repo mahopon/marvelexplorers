@@ -7,7 +7,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (pg *postgres) GetStories(ctx context.Context, offset int) interface{} {
+func (pg *Postgres) GetStories(ctx context.Context, offset int) interface{} {
 	rows, err := pg.db.Query(ctx, "SELECT * from Stories LIMIT 20 OFFSET @offset;", pgx.NamedArgs{
 		"offset": offset,
 	})

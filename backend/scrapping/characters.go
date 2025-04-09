@@ -11,28 +11,18 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"tcy/marvelexplorers/model"
+	"tcy/marvelexplorers/model/api"
 	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/joho/godotenv"
 )
 
 func extract() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("Error loading .env file: %s", err)
-	}
-
-	PUBLIC_KEY := os.Getenv("PUBLIC_KEY")
-	PRIVATE_KEY := os.Getenv("PRIVATE_KEY")
-	ts := strconv.FormatInt(time.Now().Unix(), 10)
-	hashString := getHash(ts, PRIVATE_KEY, PUBLIC_KEY)
 
 	var offset int64 = 0
 	for {
-		resp, err := http.Get("https://gateway.marvel.com/v1/public/characters?apikey=" + PUBLIC_KEY + "&hash=" + hashString + "&ts=" + ts + "&offset=" + strconv.FormatInt(offset, 10))
+		resp, err := http.Get("https://gateway.marvel.com/v1/public/characters?apikey=" + public_key + "&hash=" + hashString + "&ts=" + ts + "&offset=" + strconv.FormatInt(offset, 10))
 		if err != nil {
 			fmt.Println("Error:", err)
 			return
@@ -114,13 +104,13 @@ func insertDB(character model.Character) error {
 	// Insert URLs
 	for _, url := range character.URLs {
 		batch.Queue(
-			`INSERT INTO URLs (character_id, type, url) VALUES ($1, $2, $3) 
+			`INSERT INTO CharacterURLs (character_id, type, url) VALUES ($1, $2, $3) 
 			 ON CONFLICT DO NOTHING`,
 			character.ID, url.Type, url.URL,
 		)
 	}
 
-	// Insert Comics
+	// Insert Comics Separate this
 	for _, comic := range character.Comics.Items {
 		batch.Queue(
 			`INSERT INTO Comics (title, collectionURI) 
@@ -130,7 +120,7 @@ func insertDB(character model.Character) error {
 		)
 	}
 
-	// Insert Series
+	// Insert Series Separate this
 	for _, series := range character.Series.Items {
 		batch.Queue(
 			`INSERT INTO Series (title, collectionURI) 
@@ -140,7 +130,7 @@ func insertDB(character model.Character) error {
 		)
 	}
 
-	// Insert Stories
+	// Insert Stories Separate this
 	for _, story := range character.Stories.Items {
 		batch.Queue(
 			`INSERT INTO Stories (title, type, collectionURI) 
@@ -150,7 +140,7 @@ func insertDB(character model.Character) error {
 		)
 	}
 
-	// Insert Events
+	// Insert Events Separate this
 	for _, event := range character.Events.Items {
 		batch.Queue(
 			`INSERT INTO Events (title, collectionURI) 

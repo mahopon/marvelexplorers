@@ -20,6 +20,7 @@ func main() {
 		fmt.Println("Error:", err)
 		return
 	}
+
 	handler.StaticFiles = staticFiles
 	ctx := context.Background()
 	_, err = db.NewPG(ctx, os.Getenv("DATABASE_URL"))

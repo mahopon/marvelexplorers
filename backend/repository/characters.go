@@ -3,16 +3,18 @@ package repository
 import (
 	"context"
 	"fmt"
+	"log"
+	db_model "tcy/marvelexplorers/model/db"
 
 	"github.com/jackc/pgx/v5"
 )
 
-func (pg *postgres) GetCharacters(ctx context.Context, offset int) interface{} {
+func (pg *Postgres) GetCharacters(ctx context.Context, offset int) interface{} {
 	rows, err := pg.db.Query(ctx, "SELECT * from Characters LIMIT 20 OFFSET @offset;", pgx.NamedArgs{
 		"offset": offset,
 	})
 	if err != nil {
-		fmt.Println("Error:", err)
+		log.Printf("Error: %v", err)
 		return err
 	}
 	defer rows.Close()
@@ -60,4 +62,23 @@ func (pg *postgres) GetCharacters(ctx context.Context, offset int) interface{} {
 	}
 
 	return return_objs
+}
+
+// func (pg *Postgres) InsertCharacters(ctx context.Context)
+
+func (pg *Postgres) SearchCharacter(ctx context.Context, searchString string) []db_model.Character_db {
+	rows, err := pg.db.Query(ctx, "SELECT * FROM Characters WHERE name like '%' || @search || '%'", pgx.NamedArgs{
+		"search": searchString,
+	})
+	if err != nil {
+		log.Printf("SearchCharacter: Error caused by search character query: %v", err)
+		return nil
+	}
+
+	characters, err := pgx.CollectRows(rows, pgx.RowToStructByName[db_model.Character_db])
+	if err != nil {
+		log.Printf("SearchCharacter: Error unpacking character values: %v", err)
+		return nil
+	}
+	return characters
 }

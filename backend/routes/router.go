@@ -11,6 +11,7 @@ import (
 
 func Setup() {
 	r := mux.NewRouter()
+	r.StrictSlash(true)
 
 	r.HandleFunc("/", handler.Custom404Handler)
 	r.HandleFunc("/favicon.ico", handler.GetFavicon).Methods("GET")
@@ -21,7 +22,7 @@ func Setup() {
 	RegisterSeriesRoutes(apiRouter)
 	RegisterStoryRoutes(apiRouter)
 
-	muxWithMiddleware := middleware.LogMiddleware(r)
+	muxWithMiddleware := middleware.ApplyMiddleware(r)
 	fmt.Println("Started server on localhost:8000")
 	http.ListenAndServe(":8000", muxWithMiddleware)
 }
