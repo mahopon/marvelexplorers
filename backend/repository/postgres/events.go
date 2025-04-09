@@ -1,4 +1,4 @@
-package repository
+package postgres
 
 import (
 	"context"
@@ -7,8 +7,8 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (pg *Postgres) GetSeries(ctx context.Context, offset int) interface{} {
-	rows, err := pg.db.Query(ctx, "SELECT * from Series LIMIT 20 OFFSET @offset;", pgx.NamedArgs{
+func (pg *Postgres) GetEvents(ctx context.Context, offset int) interface{} {
+	rows, err := pg.db.Query(ctx, "SELECT * from Events LIMIT 20 OFFSET @offset;", pgx.NamedArgs{
 		"offset": offset,
 	})
 	if err != nil {

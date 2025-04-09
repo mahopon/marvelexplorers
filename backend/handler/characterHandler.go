@@ -10,7 +10,11 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func GetCharacters(w http.ResponseWriter, r *http.Request) {
+type CharacterHandler struct {
+	Service *service.CharacterService
+}
+
+func (h *CharacterHandler) GetCharacters(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/api/characters" {
 		Custom404Handler(w, r)
 		return
@@ -22,12 +26,12 @@ func GetCharacters(w http.ResponseWriter, r *http.Request) {
 	offset, _ := strconv.Atoi(offsetStr)
 	w.Header().Set("Content-Type", "application/json")
 	ctx := context.Background()
-	output, _ := json.Marshal(service.GetCharacters(ctx, offset))
+	output, _ := json.Marshal(h.Service.GetCharacters(ctx, offset))
 	w.WriteHeader(http.StatusOK)
 	w.Write(output)
 }
 
-func SearchCharacter(w http.ResponseWriter, r *http.Request) {
+func (h *CharacterHandler) SearchCharacter(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	searchStr := vars["partialName"]
 	if searchStr == "" {
@@ -36,7 +40,7 @@ func SearchCharacter(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	ctx := context.Background()
-	output, _ := json.Marshal(service.SearchCharacter(ctx, searchStr))
+	output, _ := json.Marshal(h.Service.SearchCharacter(ctx, searchStr))
 	w.WriteHeader(http.StatusOK)
 	w.Write(output)
 }

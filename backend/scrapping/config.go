@@ -4,7 +4,7 @@ import (
 	"os"
 	"strconv"
 	"sync"
-	db "tcy/marvelexplorers/repository"
+	db "tcy/marvelexplorers/repository/postgres"
 	"time"
 )
 

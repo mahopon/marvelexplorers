@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"tcy/marvelexplorers/handler"
 	"tcy/marvelexplorers/middleware"
+	db "tcy/marvelexplorers/repository/postgres"
+	"tcy/marvelexplorers/services"
 
 	"github.com/gorilla/mux"
 )
@@ -15,12 +17,17 @@ func Setup() {
 
 	r.HandleFunc("/", handler.Custom404Handler)
 	r.HandleFunc("/favicon.ico", handler.GetFavicon).Methods("GET")
-
+	pgRepo := db.GetPG()
+	characterHandler := &handler.CharacterHandler{
+		Service: &services.CharacterService{
+			Repo: pgRepo,
+		},
+	}
 	apiRouter := r.PathPrefix("/api").Subrouter()
-	RegisterCharacterRoutes(apiRouter)
-	RegisterEventRoutes(apiRouter)
-	RegisterSeriesRoutes(apiRouter)
-	RegisterStoryRoutes(apiRouter)
+	RegisterCharacterRoutes(apiRouter, characterHandler)
+	// RegisterEventRoutes(apiRouter)
+	// RegisterSeriesRoutes(apiRouter)
+	// RegisterStoryRoutes(apiRouter)
 
 	muxWithMiddleware := middleware.ApplyMiddleware(r)
 	fmt.Println("Started server on localhost:8000")

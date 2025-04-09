@@ -5,7 +5,7 @@ import (
 	"tcy/marvelexplorers/handler"
 )
 
-func RegisterCharacterRoutes(r *mux.Router) {
-	r.HandleFunc("/characters", handler.GetCharacters).Methods("GET")
-	r.HandleFunc("/characters/{partialName}", handler.SearchCharacter).Methods("GET")
+func RegisterCharacterRoutes(r *mux.Router, h *handler.CharacterHandler) {
+	r.HandleFunc("/characters", h.GetCharacters).Methods("GET")
+	r.HandleFunc("/characters/{partialName}", h.SearchCharacter).Methods("GET")
 }

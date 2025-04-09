@@ -4,11 +4,12 @@ import (
 	"context"
 	"embed"
 	"fmt"
-	"github.com/joho/godotenv"
 	"os"
 	handler "tcy/marvelexplorers/handler"
-	db "tcy/marvelexplorers/repository"
+	db "tcy/marvelexplorers/repository/postgres"
 	router "tcy/marvelexplorers/routes"
+
+	"github.com/joho/godotenv"
 )
 
 //go:embed static/*
@@ -20,7 +21,6 @@ func main() {
 		fmt.Println("Error:", err)
 		return
 	}
-
 	handler.StaticFiles = staticFiles
 	ctx := context.Background()
 	_, err = db.NewPG(ctx, os.Getenv("DATABASE_URL"))

@@ -3,13 +3,17 @@ package services
 import (
 	"context"
 	model "tcy/marvelexplorers/model/db"
-	db "tcy/marvelexplorers/repository"
+	repo "tcy/marvelexplorers/repository"
 )
 
-func GetCharacters(ctx context.Context, offset int) interface{} {
-	return db.GetPG().GetCharacters(ctx, offset)
+type CharacterService struct {
+	Repo repo.CharacterRepo
 }
 
-func SearchCharacter(ctx context.Context, searchString string) []model.Character_db {
-	return db.GetPG().SearchCharacter(ctx, searchString)
+func (s CharacterService) GetCharacters(ctx context.Context, offset int) interface{} {
+	return s.Repo.GetCharacters(ctx, offset)
+}
+
+func (s CharacterService) SearchCharacter(ctx context.Context, searchString string) []model.Character_db {
+	return s.Repo.SearchCharacter(ctx, searchString)
 }
