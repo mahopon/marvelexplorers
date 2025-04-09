@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-	db "tcy/marvelexplorers/repository"
+	service "tcy/marvelexplorers/services"
 
 	"github.com/gorilla/mux"
 )
@@ -22,7 +22,7 @@ func GetCharacters(w http.ResponseWriter, r *http.Request) {
 	offset, _ := strconv.Atoi(offsetStr)
 	w.Header().Set("Content-Type", "application/json")
 	ctx := context.Background()
-	output, _ := json.Marshal(db.GetPG().GetCharacters(ctx, offset))
+	output, _ := json.Marshal(service.GetCharacters(ctx, offset))
 	w.WriteHeader(http.StatusOK)
 	w.Write(output)
 }
@@ -36,7 +36,7 @@ func SearchCharacter(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	ctx := context.Background()
-	output, _ := json.Marshal(db.GetPG().SearchCharacter(ctx, searchStr))
+	output, _ := json.Marshal(service.SearchCharacter(ctx, searchStr))
 	w.WriteHeader(http.StatusOK)
 	w.Write(output)
 }
