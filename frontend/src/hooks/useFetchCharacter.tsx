@@ -4,6 +4,7 @@ import { Character } from "../interfaces/CharacterInterface.tsx";
 import debounce from "../utils/debounce.ts";
 
 const DATA_API = "https://tcyao.duckdns.org/api/characters?offset=";
+const SEARCH_API = "https://tcyao.duckdns.org/api/characters/"
 
 const useCharacterFetch = () => {
     const [characters, setCharacters] = useState<Character[]>([]);
@@ -43,10 +44,19 @@ const useCharacterFetch = () => {
             return;
         }
         const lowercaseTerm = searchTerm.toLowerCase();
-        const filtered = characters.filter((char) => 
-            char.name.toLowerCase().includes(lowercaseTerm)
-        );
-        setFilteredCharacters(filtered);
+        axios.get(SEARCH_API+lowercaseTerm)
+        .then((res)=> {
+            const FILTERED_CHARS: Character[] = res.data.map((char: any) => ({
+                id: char.ID,
+                name: char.Name,
+                resourceURI: char.ResourceURI,
+                thumbnailExtension: char.ThumbnailExtension,
+                thumbnailPath: char.ThumbnailPath
+            }));
+            setFilteredCharacters(FILTERED_CHARS);
+        }).catch((err)=> {
+            console.log(err);
+        })
     }, 500);
 
     const handleScroll = (containerRef: React.RefObject<HTMLDivElement | null>) => {
