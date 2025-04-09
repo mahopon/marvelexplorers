@@ -6,7 +6,6 @@ const SearchBar: React.FC<ISearchBar> = ({onSearch} : {onSearch: (searchTerm: st
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         onSearch(e.target.value);
-        console.log(e.target.value);
     }
 
     const clearInput = () => {

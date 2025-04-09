@@ -60,7 +60,8 @@ const useCharacterFetch = () => {
     }, 500);
 
     const handleScroll = (containerRef: React.RefObject<HTMLDivElement | null>) => {
-        if (filteredCharacters) return false;
+        console.log(filteredCharacters);
+        if (filteredCharacters.length != 0) return false;
         const el = containerRef.current;
         if (!el || loading) return;
         const isBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 5;
@@ -77,7 +78,8 @@ const useCharacterFetch = () => {
     
 
     const checkOverflow = (containerRef: React.RefObject<HTMLDivElement | null>) => {
-        if (filteredCharacters) return;
+        console.log(filteredCharacters);
+        if (filteredCharacters.length != 0) return;
         const container = containerRef.current;
         if (!container) return;
     
