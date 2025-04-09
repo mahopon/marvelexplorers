@@ -67,7 +67,7 @@ func (pg *Postgres) GetCharacters(ctx context.Context, offset int) interface{} {
 // func (pg *Postgres) InsertCharacters(ctx context.Context)
 
 func (pg *Postgres) SearchCharacter(ctx context.Context, searchString string) []db_model.Character_db {
-	rows, err := pg.db.Query(ctx, "SELECT * FROM Characters WHERE name like '%' || @search || '%'", pgx.NamedArgs{
+	rows, err := pg.db.Query(ctx, "SELECT * FROM Characters WHERE name ilike '%' || @search || '%'", pgx.NamedArgs{
 		"search": searchString,
 	})
 	if err != nil {
