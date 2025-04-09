@@ -27,6 +27,7 @@ echo "Verifying the binary..."
 file "$OUTPUT_NAME"
 
 docker stop marvelbackend
+docker rm marvelbackend
 docker rmi marvelbackend
 
 docker build -t marvelbackend .
