@@ -67,6 +67,7 @@ const useCharacterFetch = () => {
     };
 
     const isAtBottom = (containerRef: React.RefObject<HTMLDivElement | null>) => {
+        if (filteredCharacters) return false;
         const container = containerRef.current;
         if (!container) return false;
     
@@ -76,6 +77,7 @@ const useCharacterFetch = () => {
     
 
     const checkOverflow = (containerRef: React.RefObject<HTMLDivElement | null>) => {
+        if (filteredCharacters) return;
         const container = containerRef.current;
         if (!container) return;
     
