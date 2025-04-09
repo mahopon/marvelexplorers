@@ -26,6 +26,9 @@ fi
 echo "Verifying the binary..."
 file "$OUTPUT_NAME"
 
-# Optional: Inform user to transfer the binary to Alpine
-echo "To deploy, transfer '$OUTPUT_NAME' to your Alpine system and run it with:"
-echo "./$OUTPUT_NAME"
+docker stop marvelbackend
+docker rmi marvelbackend
+
+docker build -t marvelbackend .
+docker create --name marvelbackend -p 8000:8000 --network container_setup_default marvelbackend
+docker start marvelbackend
