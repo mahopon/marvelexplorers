@@ -2,6 +2,7 @@
 .env*
 *.exe*
 *.pyc*
+/pycache/*
 **/__pycache__/
 */settings.py
 scrapper/Scripts
