@@ -1,6 +1,8 @@
 */node_modules
 .env*
 *.exe*
+*.pyc*
+**/__pycache__/
 */settings.py
 scrapper/Scripts
 scrapper/Lib
