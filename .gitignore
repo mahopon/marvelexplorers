@@ -1,10 +1,10 @@
-*/node_modules
+**/node_modules
 .env*
 *.exe*
 *.pyc*
 /pycache/*
 **/__pycache__/
-*/settings.py
+**/settings.py
 scrapper/Scripts
 scrapper/Lib
 scrapper/Include
