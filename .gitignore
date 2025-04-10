@@ -1,4 +1,8 @@
 */node_modules
-*/.env
-*/*.exe
+.env*
+*.exe*
 */settings.py
+scrapper/Scripts
+scrapper/Lib
+scrapper/Include
+scrapper/pyvenv.cfg
