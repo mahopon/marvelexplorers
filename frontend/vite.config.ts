@@ -12,10 +12,10 @@ export default defineConfig({
           if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType!)) {
             extType = 'img';
           }
-          return `assets/${extType}/[name]-[hash][extname]`;
+          return `marvelexplorers/assets/${extType}/[name]-[hash][extname]`;
         },
-        chunkFileNames: 'assets/js/[name]-[hash].js',
-        entryFileNames: 'assets/js/[name]-[hash].js',
+        chunkFileNames: 'marvelexplorers/assets/js/[name]-[hash].js',
+        entryFileNames: 'marvelexplorers/assets/js/[name]-[hash].js',
       }
     }
   }
