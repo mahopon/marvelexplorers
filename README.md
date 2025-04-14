@@ -10,5 +10,3 @@ A pet project meant to explore Marvel Comic characters
 ## Deployment
 This project uses Docker to containerize the frontend, backend, and database.
 
-## Notes
-Due to Marvel's API being down as of 28/3/2025, development will have to stop until the API is back up to be scrapped for its data.
