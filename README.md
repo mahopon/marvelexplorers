@@ -1,4 +1,4 @@
-# [Marvel Explorers](https://tcyao.duckdns.org/marvelexplorers)
+# [Marvel Explorers](https://tcyao.com/marvelexplorers)
 
 A pet project meant to explore Marvel Comic characters
 
