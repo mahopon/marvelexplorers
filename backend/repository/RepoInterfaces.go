@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"tcy/marvelexplorers/model/db"
+	model "tcy/marvelexplorers/model/db"
 )
 
 type CharacterRepo interface {
