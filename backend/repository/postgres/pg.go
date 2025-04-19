@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"sync"
-	repo "tcy/marvelexplorers/repository"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -17,8 +16,6 @@ var (
 	pgInstance *Postgres
 	pgOnce     sync.Once
 )
-
-var _ repo.CharacterRepo = (*Postgres)(nil)
 
 func NewPG(ctx context.Context, connString string) (*Postgres, error) {
 	pgOnce.Do(func() {

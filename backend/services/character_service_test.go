@@ -20,7 +20,7 @@ func TestGetCharacters(t *testing.T) {
 		},
 	}
 	svc := services.CharacterService{
-		Repo: mockRepo,
+		DBRepo: mockRepo,
 	}
 	h := handler.CharacterHandler{
 		Service: &svc, // Ensure svc implements the interface

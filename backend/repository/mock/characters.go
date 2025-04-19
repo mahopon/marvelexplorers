@@ -3,25 +3,22 @@ package mock
 import (
 	"context"
 	"tcy/marvelexplorers/model/db"
-	"tcy/marvelexplorers/repository"
 )
 
 type MockCharacterRepo struct {
 	Characters []model.Character_db
 }
 
-var _ repository.CharacterRepo = (*MockCharacterRepo)(nil)
-
-func (m *MockCharacterRepo) GetCharacters(ctx context.Context, offset int) interface{} {
-	return m.Characters
+func (m *MockCharacterRepo) GetCharacters(ctx context.Context, offset int) (any, error) {
+	return m.Characters, nil
 }
 
-func (m *MockCharacterRepo) SearchCharacter(ctx context.Context, searchString string) []model.Character_db {
+func (m *MockCharacterRepo) SearchCharacter(ctx context.Context, searchString string) ([]model.Character_db, error) {
 	var result []model.Character_db
 	for _, c := range m.Characters {
 		if searchString == "" || searchString == c.Name {
 			result = append(result, c)
 		}
 	}
-	return result
+	return result, nil
 }

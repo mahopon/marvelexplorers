@@ -9,13 +9,13 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (pg *Postgres) GetCharacters(ctx context.Context, offset int) interface{} {
+func (pg *Postgres) GetCharacters(ctx context.Context, offset int) (interface{}, error) {
 	rows, err := pg.db.Query(ctx, "SELECT * from Characters LIMIT 20 OFFSET @offset;", pgx.NamedArgs{
 		"offset": offset,
 	})
 	if err != nil {
 		log.Printf("Error: %v", err)
-		return err
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -38,7 +38,7 @@ func (pg *Postgres) GetCharacters(ctx context.Context, offset int) interface{} {
 		err := rows.Scan(values...)
 		if err != nil {
 			fmt.Println("Error scanning row:", err)
-			return err
+			return nil, err
 		}
 
 		// Create a map to hold the column names and their corresponding values
@@ -61,24 +61,24 @@ func (pg *Postgres) GetCharacters(ctx context.Context, offset int) interface{} {
 		fmt.Println("Error iterating over rows:", err)
 	}
 
-	return return_objs
+	return return_objs, nil
 }
 
 // func (pg *Postgres) InsertCharacters(ctx context.Context)
 
-func (pg *Postgres) SearchCharacter(ctx context.Context, searchString string) []db_model.Character_db {
+func (pg *Postgres) SearchCharacter(ctx context.Context, searchString string) ([]db_model.Character_db, error) {
 	rows, err := pg.db.Query(ctx, "SELECT * FROM Characters WHERE name ilike '%' || @search || '%'", pgx.NamedArgs{
 		"search": searchString,
 	})
 	if err != nil {
 		log.Printf("SearchCharacter: Error caused by search character query: %v", err)
-		return nil
+		return nil, err
 	}
 
 	characters, err := pgx.CollectRows(rows, pgx.RowToStructByName[db_model.Character_db])
 	if err != nil {
 		log.Printf("SearchCharacter: Error unpacking character values: %v", err)
-		return nil
+		return nil, err
 	}
-	return characters
+	return characters, nil
 }

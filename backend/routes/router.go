@@ -20,7 +20,7 @@ func Setup() {
 	pgRepo := db.GetPG()
 	characterHandler := &handler.CharacterHandler{
 		Service: &services.CharacterService{
-			Repo: pgRepo,
+			DBRepo: pgRepo,
 		},
 	}
 	apiRouter := r.PathPrefix("/api").Subrouter()

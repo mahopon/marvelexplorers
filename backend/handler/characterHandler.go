@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	model "tcy/marvelexplorers/model/db"
 	service "tcy/marvelexplorers/services"
 
 	"github.com/gorilla/mux"
@@ -26,9 +27,19 @@ func (h *CharacterHandler) GetCharacters(w http.ResponseWriter, r *http.Request)
 	offset, _ := strconv.Atoi(offsetStr)
 	w.Header().Set("Content-Type", "application/json")
 	ctx := context.Background()
-	output, _ := json.Marshal(h.Service.GetCharacters(ctx, offset))
+	output, _ := h.Service.GetCharactersWithCache(ctx, offset)
+	characters, ok := output.([]model.Character_db)
+	if !ok {
+		http.Error(w, "Failed to parse characters", http.StatusInternalServerError)
+		return
+	}
+	response, err := json.Marshal(characters)
+	if err != nil {
+		http.Error(w, "Failed to encode characters", http.StatusInternalServerError)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
-	w.Write(output)
+	w.Write(response)
 }
 
 func (h *CharacterHandler) SearchCharacter(w http.ResponseWriter, r *http.Request) {
@@ -40,7 +51,8 @@ func (h *CharacterHandler) SearchCharacter(w http.ResponseWriter, r *http.Reques
 	}
 	w.Header().Set("Content-Type", "application/json")
 	ctx := context.Background()
-	output, _ := json.Marshal(h.Service.SearchCharacter(ctx, searchStr))
+	result, _ := h.Service.SearchCharacterWithCache(ctx, searchStr)
+	output, _ := json.Marshal(result)
 	w.WriteHeader(http.StatusOK)
 	w.Write(output)
 }
