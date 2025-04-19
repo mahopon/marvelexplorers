@@ -13,6 +13,9 @@ export CGO_ENABLED=0
 # Remove current file
 rm marvelexplorers
 
+# Ensure go.mod and go.sum are proper
+go mod tidy
+
 # Build the Go binary for Alpine (Linux, amd64)
 echo "Building binary for Alpine Linux (GOOS=linux, GOARCH=amd64)..."
 go build -o "$OUTPUT_NAME" "$SOURCE_FILE"
