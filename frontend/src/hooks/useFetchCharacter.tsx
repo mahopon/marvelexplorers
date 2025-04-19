@@ -3,8 +3,8 @@ import axios from "axios";
 import { Character } from "../interfaces/CharacterInterface.tsx";
 import debounce from "../utils/debounce.ts";
 
-const DATA_API = "https://tcyao.duckdns.org/api/characters?offset=";
-const SEARCH_API = "https://tcyao.duckdns.org/api/characters/"
+const DATA_API = "http://tcyao.com/api/characters?offset=";
+const SEARCH_API = "https://tcyao.com/api/characters/"
 
 const useCharacterFetch = () => {
     const [characters, setCharacters] = useState<Character[]>([]);
@@ -20,11 +20,12 @@ const useCharacterFetch = () => {
             .then((res) => {
                 if (res.data.length === 0) allLoaded.current = true;
                 const newChars: Character[] = res.data.map((newChar: any) => ({
-                    id: newChar.id,
-                    name: newChar.name,
-                    resourceURI: newChar.resourceuri,
-                    thumbnailExtension: newChar.thumbnail_extension,
-                    thumbnailPath: newChar.thumbnail_path
+                    id: newChar.ID,
+                    name: newChar.Name,
+                    description: newChar.Description,
+                    resourceURI: newChar.ResourceURI,
+                    thumbnailExtension: newChar.ThumbnailExtension,
+                    thumbnailPath: newChar.ThumbnailPath
                 }));
                 setTimeout(() => {
                     setCharacters((prev) => [...prev, ...newChars]);
