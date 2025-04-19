@@ -27,7 +27,7 @@ jobs:
           path: |
             ~/.cache/go-build
             ~/.go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          key: ${{ runner.os }}-go-${{ hashFiles('backend/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
 
@@ -44,7 +44,8 @@ jobs:
       - name: Build
         run: |
           cd backend  # Change directory to backend
-          go build -v ./...
+          go build -o marvelexplorers main.go  # Build with output filename marvelexplorers
+
 
       - name: Upload Build Artifact (optional)
         if: success()
