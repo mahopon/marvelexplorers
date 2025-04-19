@@ -3,7 +3,7 @@ import axios from "axios";
 import { Character } from "../interfaces/CharacterInterface.tsx";
 import debounce from "../utils/debounce.ts";
 
-const DATA_API = "http://tcyao.com/api/characters?offset=";
+const DATA_API = "https://tcyao.com/api/characters?offset=";
 const SEARCH_API = "https://tcyao.com/api/characters/"
 
 const useCharacterFetch = () => {
