@@ -2,15 +2,15 @@ package repository
 
 import (
 	"context"
-	model "tcy/marvelexplorers/model/db"
+	"time"
 )
 
-type CharacterRepo interface {
-	GetCharacters(ctx context.Context, offset int) (interface{}, error)
-	SearchCharacter(ctx context.Context, searchString string) ([]model.Character_db, error)
+type DBRepo[T any] interface {
+	Get(ctx context.Context, table string, offset int) ([]T, error)
+	Search(ctx context.Context, table string, searchString string) ([]T, error)
 }
 
-type CharacterCacheRepo interface {
-	GetCharacters(ctx context.Context, offset int) (interface{}, error)
-	SearchCharacter(ctx context.Context, searchString string) ([]model.Character_db, error)
+type CacheRepo[T any] interface {
+	Get(ctx context.Context, table string, searchString string) (string, error)
+	Insert(ctx context.Context, table string, key string, value any, ttl time.Duration) error
 }

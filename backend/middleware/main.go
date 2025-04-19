@@ -5,5 +5,5 @@ import (
 )
 
 func ApplyMiddleware(next http.Handler) http.Handler {
-	return LogMiddleware(maintenanceMiddleware(next))
+	return LogMiddleware(maintenanceMiddleware(CORSMiddleware(next)))
 }

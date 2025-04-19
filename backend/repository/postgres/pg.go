@@ -12,10 +12,20 @@ type Postgres struct {
 	db *pgxpool.Pool
 }
 
+type PostgresRepo[T any] struct {
+	Conn Postgres
+}
+
 var (
 	pgInstance *Postgres
 	pgOnce     sync.Once
 )
+
+func NewPostgresRepo() *PostgresRepo[any] {
+	return &PostgresRepo[any]{
+		Conn: *GetPG(),
+	}
+}
 
 func NewPG(ctx context.Context, connString string) (*Postgres, error) {
 	pgOnce.Do(func() {

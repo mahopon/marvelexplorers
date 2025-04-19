@@ -2,54 +2,114 @@ package services
 
 import (
 	"context"
+	"sync"
 	model "tcy/marvelexplorers/model/db"
 	repo "tcy/marvelexplorers/repository"
-	redis "tcy/marvelexplorers/repository/redis"
+
+	"encoding/json"
+	"strconv"
+	"time"
+
+	"github.com/mahopon/gobackend/redis"
 )
 
 type CharacterService struct {
-	RedisRepo redis.CharacterRepoRedis
-	DBRepo    repo.CharacterRepo
+	RedisRepo repo.CacheRepo[model.Character_db]
+	DBRepo    repo.DBRepo[model.Character_db]
 }
 
-func NewCharacterService(repo repo.CharacterRepo, redisRepo redis.CharacterRepoRedis) *CharacterService {
+var (
+	character_table          string = "Characters"
+	characterServiceInstance *CharacterService
+	characterServiceOnce     sync.Once
+)
+
+func newCharacterService(repo repo.DBRepo[model.Character_db], redisRepo repo.CacheRepo[model.Character_db]) *CharacterService {
 	return &CharacterService{DBRepo: repo, RedisRepo: redisRepo}
 }
 
+func GetCharacterService(dbRepo repo.DBRepo[model.Character_db], redisRepo repo.CacheRepo[model.Character_db]) *CharacterService {
+	characterServiceOnce.Do(func() {
+		characterServiceInstance = newCharacterService(dbRepo, redisRepo)
+	})
+	return characterServiceInstance
+}
+
 func (s CharacterService) GetCharactersFromDB(ctx context.Context, offset int) (any, error) {
-	return s.DBRepo.GetCharacters(ctx, offset)
+	return s.DBRepo.Get(ctx, character_table, offset)
 }
 
 func (s CharacterService) SearchCharacterFromDB(ctx context.Context, searchString string) ([]model.Character_db, error) {
-	return s.DBRepo.SearchCharacter(ctx, searchString)
+	return s.DBRepo.Search(ctx, character_table, searchString)
 }
 
-func (s CharacterService) GetCharactersFromCache(ctx context.Context, offset int) (any, error) {
-	return s.RedisRepo.GetCharacters(ctx, offset)
+func (s CharacterService) GetCharactersFromCache(ctx context.Context, offset int) (string, error) {
+	cacheKey := "offset:" + strconv.Itoa(offset)
+	return s.RedisRepo.Get(ctx, character_table, cacheKey)
 }
 
-func (s CharacterService) SearchCharacterFromCache(ctx context.Context, searchString string) ([]model.Character_db, any) {
-	return s.RedisRepo.SearchCharacter(ctx, searchString)
+func (s CharacterService) SearchCharacterFromCache(ctx context.Context, searchString string) (string, error) {
+	cacheKey := "search:" + searchString
+	return s.RedisRepo.Get(ctx, character_table, cacheKey)
 }
 
-func (s CharacterService) GetCharactersWithCache(ctx context.Context, offset int) (any, error) {
-	result, _ := s.GetCharactersFromCache(ctx, offset)
-	var err error
-	// Cache miss
-	if result == "" {
-		result, err = s.GetCharactersFromDB(ctx, offset)
-		// Add in write to Redis
+func (s CharacterService) InsertCharactersIntoCache(ctx context.Context, key string, value any, ttl time.Duration) error {
+	return s.RedisRepo.Insert(ctx, character_table, key, value, ttl)
+}
+
+func (s CharacterService) GetCharactersWithCache(ctx context.Context, offset int) ([]byte, error) {
+	raw, _ := s.GetCharactersFromCache(ctx, offset)
+
+	// Cache hit
+	if raw != "" {
+		return []byte(raw), nil
 	}
-	return result, err
+
+	// Cache miss - get from DB
+	data, err := s.GetCharactersFromDB(ctx, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	// Marshal to JSON
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+
+	// Store in cache
+	cacheKey := "offset:" + strconv.Itoa(offset)
+	_ = s.InsertCharactersIntoCache(ctx, cacheKey, jsonData, redis.CACHE_TTL_LONG)
+
+	return jsonData, nil
 }
 
-func (s CharacterService) SearchCharacterWithCache(ctx context.Context, searchString string) ([]model.Character_db, error) {
-	result, _ := s.SearchCharacterFromCache(ctx, searchString)
-	var err error
-	// Cache miss
-	if result == nil {
-		result, err = s.SearchCharacterFromDB(ctx, searchString)
-		// Add in write to Redis
+func (s CharacterService) SearchCharacterWithCache(ctx context.Context, searchString string) ([]byte, error) {
+	raw, _ := s.SearchCharacterFromCache(ctx, searchString)
+
+	// Cache hit
+	if raw != "" {
+		return []byte(raw), nil
 	}
-	return result, err
+
+	// Cache miss
+	result, err := s.SearchCharacterFromDB(ctx, searchString)
+	if err != nil {
+		return nil, err
+	}
+
+	// Marshall to JSON
+	jsonEncoding, err := json.Marshal(result)
+	if err != nil {
+		return nil, err
+	}
+
+	// Store in cache
+	cacheKey := "search:" + searchString
+	err = s.InsertCharactersIntoCache(ctx, cacheKey, jsonEncoding, redis.CACHE_TTL_LONG)
+	if err != nil {
+		return nil, err
+	}
+
+	return jsonEncoding, nil
 }

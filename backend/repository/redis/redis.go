@@ -1,15 +1,25 @@
 package redis
 
 import (
-	redis "github.com/mahopon/gobackend/redis"
+	"sync"
+
+	redislib "github.com/mahopon/gobackend/redis"
 )
 
-type CharacterRepoRedis struct {
-	client redis.RedisClient
+type RedisRepo[T any] struct {
+	Client redislib.RedisClient
 }
 
-func NewCharacterRepoRedis() *CharacterRepoRedis {
-	return &CharacterRepoRedis{
-		client: redis.GetClient(),
-	}
+var (
+	redisRepoInstance *RedisRepo[any]
+	once              sync.Once
+)
+
+func GetRedisRepo() *RedisRepo[any] {
+	once.Do(func() {
+		redisRepoInstance = &RedisRepo[any]{
+			Client: redislib.GetClient(),
+		}
+	})
+	return redisRepoInstance
 }
