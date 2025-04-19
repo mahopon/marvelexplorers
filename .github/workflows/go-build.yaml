@@ -1,0 +1,54 @@
+name: Go Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.24'
+
+      - name: Cache Go modules
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/.go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Install dependencies
+        run: |
+          cd backend  # Change directory to backend
+          go mod tidy
+
+      # - name: Run tests
+      #   run: |
+      #     cd backend  # Change directory to backend
+      #     go test -v ./...
+
+      - name: Build
+        run: |
+          cd backend  # Change directory to backend
+          go build -v ./...
+
+      - name: Upload Build Artifact (optional)
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: go-build
+          path: ./backend/your-build-output-directory
