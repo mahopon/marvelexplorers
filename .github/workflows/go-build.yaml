@@ -48,7 +48,7 @@ jobs:
 
       - name: Upload Build Artifact (optional)
         if: success()
-        uses: actions/upload-artifact@vr
+        uses: actions/upload-artifact@v4
         with:
           name: go-build
           path: ./backend/your-build-output-directory
