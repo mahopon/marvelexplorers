@@ -2,7 +2,7 @@ package routes
 
 import (
 	"fmt"
-	redislib "github.com/mahopon/gobackend/redis"
+	"github.com/gorilla/mux"
 	"net/http"
 	"tcy/marvelexplorers/handler"
 	"tcy/marvelexplorers/middleware"
@@ -10,8 +10,6 @@ import (
 	dbRepo "tcy/marvelexplorers/repository/postgres"
 	redisRepo "tcy/marvelexplorers/repository/redis"
 	"tcy/marvelexplorers/services"
-
-	"github.com/gorilla/mux"
 )
 
 func Setup() {
@@ -22,8 +20,8 @@ func Setup() {
 	r.HandleFunc("/favicon.ico", handler.GetFavicon).Methods("GET")
 	apiRouter := r.PathPrefix("/api").Subrouter()
 	RegisterCharacterRoutes(apiRouter, &handler.CharacterHandler{Service: services.GetCharacterService(
-		&dbRepo.PostgresRepo[model.Character_db]{Conn: *dbRepo.GetPG()},
-		&redisRepo.RedisRepo[model.Character_db]{Client: redislib.GetClient()},
+		dbRepo.NewPGRepo[model.Character_db](),
+		redisRepo.NewRedisRepo[model.Character_db](),
 	)})
 	// RegisterEventRoutes(apiRouter)
 	// RegisterSeriesRoutes(apiRouter)
