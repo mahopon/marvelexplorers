@@ -3,6 +3,7 @@ package main
 import (
 	"embed"
 	"fmt"
+	"net/http"
 	handler "tcy/marvelexplorers/handler"
 	router "tcy/marvelexplorers/routes"
 
@@ -19,5 +20,8 @@ func main() {
 		return
 	}
 	handler.StaticFiles = staticFiles
-	router.Setup()
+
+	server := router.Setup()
+	fmt.Println("Started server on localhost:8000")
+	http.ListenAndServe(":8000", server)
 }

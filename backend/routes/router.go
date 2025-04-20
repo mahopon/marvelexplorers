@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
 	"tcy/marvelexplorers/handler"
@@ -12,7 +11,7 @@ import (
 	"tcy/marvelexplorers/services"
 )
 
-func Setup() {
+func Setup() http.Handler {
 	r := mux.NewRouter()
 	r.StrictSlash(true)
 
@@ -28,6 +27,5 @@ func Setup() {
 	// RegisterStoryRoutes(apiRouter)
 
 	muxWithMiddleware := middleware.ApplyMiddleware(r)
-	fmt.Println("Started server on localhost:8000")
-	http.ListenAndServe(":8000", muxWithMiddleware)
+	return muxWithMiddleware
 }
