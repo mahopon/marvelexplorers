@@ -45,6 +45,10 @@ func (h *CharacterHandler) SearchCharacter(w http.ResponseWriter, r *http.Reques
 	ctx := context.Background()
 	result, err := h.Service.SearchCharacterWithCache(ctx, searchStr)
 	if err != nil {
+		if err.Error() == "No data" {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

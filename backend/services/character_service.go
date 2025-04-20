@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"errors"
 	"sync"
 	model "tcy/marvelexplorers/model/db"
 	repo "tcy/marvelexplorers/repository"
@@ -35,7 +36,7 @@ func GetCharacterService(dbRepo repo.DBRepo[model.Character_db], redisRepo repo.
 	return characterServiceInstance
 }
 
-func (s CharacterService) GetCharactersFromDB(ctx context.Context, offset int) (any, error) {
+func (s CharacterService) GetCharactersFromDB(ctx context.Context, offset int) ([]model.Character_db, error) {
 	return s.DBRepo.Get(ctx, character_table, offset)
 }
 
@@ -96,6 +97,10 @@ func (s CharacterService) SearchCharacterWithCache(ctx context.Context, searchSt
 	result, err := s.SearchCharacterFromDB(ctx, searchString)
 	if err != nil {
 		return nil, err
+	}
+
+	if len(result) == 0 {
+		return nil, errors.New("No data")
 	}
 
 	// Marshall to JSON
