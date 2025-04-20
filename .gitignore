@@ -9,3 +9,4 @@ scrapper/Scripts
 scrapper/Lib
 scrapper/Include
 scrapper/pyvenv.cfg
+**/artifact.sh

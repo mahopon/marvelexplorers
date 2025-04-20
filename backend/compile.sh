@@ -13,20 +13,23 @@ export CGO_ENABLED=0
 # Remove current file
 rm marvelexplorers
 
-# Ensure go.mod and go.sum are proper
-go mod tidy
+# # Ensure go.mod and go.sum are proper
+# go mod tidy
 
-# Build the Go binary for Alpine (Linux, amd64)
-echo "Building binary for Alpine Linux (GOOS=linux, GOARCH=amd64)..."
-go build -o "$OUTPUT_NAME" "$SOURCE_FILE"
+# # Build the Go binary for Alpine (Linux, amd64)
+# echo "Building binary for Alpine Linux (GOOS=linux, GOARCH=amd64)..."
+# go build -o "$OUTPUT_NAME" "$SOURCE_FILE"
 
-# Check if the build was successful
-if [ $? -eq 0 ]; then
-    echo "Build successful! The binary is saved as '$OUTPUT_NAME'."
-else
-    echo "Build failed. Please check the errors above."
-    exit 1
-fi
+# # Check if the build was successful
+# if [ $? -eq 0 ]; then
+#     echo "Build successful! The binary is saved as '$OUTPUT_NAME'."
+# else
+#     echo "Build failed. Please check the errors above."
+#     exit 1
+# fi
+
+# Get latest artifact from workflows
+bash artifact.sh
 
 # Verify the binary format
 echo "Verifying the binary..."
