@@ -8,7 +8,7 @@ import (
 )
 
 func (pg *PostgresRepo[T]) Get(ctx context.Context, table string, offset int) ([]T, error) {
-	rows, err := pg.Conn.db.Query(ctx, "SELECT * from "+table+" LIMIT 20 OFFSET @offset;", pgx.NamedArgs{
+	rows, err := pg.db.Query(ctx, "SELECT * from "+table+" LIMIT 20 OFFSET @offset;", pgx.NamedArgs{
 		"offset": offset,
 	})
 	if err != nil {
@@ -27,7 +27,7 @@ func (pg *PostgresRepo[T]) Get(ctx context.Context, table string, offset int) ([
 // func (pg *Postgres) InsertCharacters(ctx context.Context)
 
 func (pg *PostgresRepo[T]) Search(ctx context.Context, table string, searchString string) ([]T, error) {
-	rows, err := pg.Conn.db.Query(ctx, "SELECT * FROM "+table+" WHERE name ilike '%' || @search || '%'", pgx.NamedArgs{
+	rows, err := pg.db.Query(ctx, "SELECT * FROM "+table+" WHERE name ilike '%' || @search || '%'", pgx.NamedArgs{
 		"search": searchString,
 	})
 	if err != nil {

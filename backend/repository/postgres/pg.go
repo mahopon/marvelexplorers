@@ -3,55 +3,41 @@ package postgres
 import (
 	"context"
 	"fmt"
-	"sync"
-
 	"github.com/jackc/pgx/v5/pgxpool"
+	"os"
+	"sync"
 )
 
-type Postgres struct {
+type PostgresRepo[T any] struct {
 	db *pgxpool.Pool
 }
 
-type PostgresRepo[T any] struct {
-	Conn Postgres
-}
-
 var (
-	pgInstance *Postgres
-	pgOnce     sync.Once
+	dbPool *pgxpool.Pool
+	dbOnce sync.Once
 )
 
-func NewPostgresRepo() *PostgresRepo[any] {
-	return &PostgresRepo[any]{
-		Conn: *GetPG(),
-	}
+func NewPGRepo[T any]() *PostgresRepo[T] {
+	return &PostgresRepo[T]{db: getDBPool()}
 }
 
-func NewPG(ctx context.Context, connString string) (*Postgres, error) {
-	pgOnce.Do(func() {
-		db, err := pgxpool.New(ctx, connString)
+func getDBPool() *pgxpool.Pool {
+	dbOnce.Do(func() {
+		ctx := context.Background()
+		var err error
+		dbPool, err = pgxpool.New(ctx, os.Getenv("DATABASE_URL"))
 		if err != nil {
-			fmt.Errorf("unable to create connection pool: %w", err)
+			fmt.Printf("unable to create connection pool: %v\n", err)
 			return
 		}
-		pgInstance = &Postgres{db}
 	})
-
-	return pgInstance, nil
+	return dbPool
 }
 
-func GetPG() *Postgres {
-	if pgInstance == nil {
-		return nil
-	} else {
-		return pgInstance
-	}
-}
-
-func (pg *Postgres) Ping(ctx context.Context) error {
+func (pg *PostgresRepo[T]) Ping(ctx context.Context) error {
 	return pg.db.Ping(ctx)
 }
 
-func (pg *Postgres) Close() {
+func (pg *PostgresRepo[T]) Close() {
 	pg.db.Close()
 }
