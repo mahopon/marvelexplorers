@@ -5,6 +5,9 @@ import "../styles/SearchBar.css";
 const SearchBar: React.FC<ISearchBar> = ({onSearch} : {onSearch: (searchTerm: string) => void}) => {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        const element = document.getElementsByClassName("searchTerm")[0] as HTMLInputElement;
+        element.value = value;
         onSearch(e.target.value);
     }
 
