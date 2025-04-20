@@ -6,7 +6,4 @@ A pet project meant to explore Marvel Comic characters
 1. Backend GO HTTP server using Gorilla mux
 2. Postgresql database
 3. React
-
-## Deployment
-This project uses Docker to containerize the frontend, backend, and database.
-
+4. Redis for API cache
