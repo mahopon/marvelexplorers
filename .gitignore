@@ -10,3 +10,4 @@ scrapper/Lib
 scrapper/Include
 scrapper/pyvenv.cfg
 **/artifact.sh
+**/go-build.zip
