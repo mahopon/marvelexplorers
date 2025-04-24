@@ -11,8 +11,9 @@ export GOARCH=amd64
 export CGO_ENABLED=0
 
 # Remove current file
-rm marvelexplorers
+[-f marvelexplorers] && rm marvelexplorers
 
+# Uncomment if need to build manually for local development
 # # Ensure go.mod and go.sum are proper
 # go mod tidy
 
@@ -28,16 +29,17 @@ rm marvelexplorers
 #     exit 1
 # fi
 
+[-f .env] && { echo ".env exists. continuing with deployment"; source ".env"; } || { echo ".env file not found. exiting."; exit 1; }
+
 # Get latest artifact from workflows
-bash artifact.sh
+bash artifact.sh || { echo "Failed to extract artifact from workflow. Exiting."; exit 1; }
 
 # Verify the binary format
 echo "Verifying the binary..."
 file "$OUTPUT_NAME"
 
-docker stop marvelbackend
-docker rm marvelbackend
-docker rmi marvelbackend
+docker rm -f marvelbackend
+docker rmi -f marvelbackend
 
 docker build -t marvelbackend .
 docker create --name marvelbackend -p 8000:8000 --network container_setup_default marvelbackend
