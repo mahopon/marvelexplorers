@@ -2,7 +2,6 @@ package redis
 
 import (
 	"context"
-	"log"
 	"strings"
 	"time"
 )
@@ -14,7 +13,6 @@ func (repo *RedisRepo[T]) Get(ctx context.Context, table string, searchString st
 	builder.WriteString(searchString)
 	result, err := repo.client.Get(builder.String())
 	if err != nil {
-		log.Printf("Error getting character, %s: %v", searchString, err)
 		return "", err
 	}
 	return result, nil
@@ -27,7 +25,6 @@ func (repo *RedisRepo[T]) Insert(ctx context.Context, table string, key string, 
 	builder.WriteString(key)
 	err := repo.client.Set(builder.String(), value, ttl)
 	if err != nil {
-		log.Printf("Could not set in Redis: %v", err)
 		return err
 	}
 	return nil

@@ -59,11 +59,12 @@ func (s CharacterService) InsertCharactersIntoCache(ctx context.Context, key str
 }
 
 func (s CharacterService) GetCharactersWithCache(ctx context.Context, offset int) ([]byte, error) {
-	raw, _ := s.GetCharactersFromCache(ctx, offset)
-
-	// Cache hit
-	if raw != "" {
-		return []byte(raw), nil
+	raw, err := s.GetCharactersFromCache(ctx, offset)
+	if err == nil {
+		// Cache hit
+		if raw != "" {
+			return []byte(raw), nil
+		}
 	}
 
 	// Cache miss - get from DB
@@ -86,11 +87,12 @@ func (s CharacterService) GetCharactersWithCache(ctx context.Context, offset int
 }
 
 func (s CharacterService) SearchCharacterWithCache(ctx context.Context, searchString string) ([]byte, error) {
-	raw, _ := s.SearchCharacterFromCache(ctx, searchString)
-
-	// Cache hit
-	if raw != "" {
-		return []byte(raw), nil
+	raw, err := s.SearchCharacterFromCache(ctx, searchString)
+	if err == nil {
+		// Cache hit
+		if raw != "" {
+			return []byte(raw), nil
+		}
 	}
 
 	// Cache miss
@@ -100,7 +102,7 @@ func (s CharacterService) SearchCharacterWithCache(ctx context.Context, searchSt
 	}
 
 	if len(result) == 0 {
-		return nil, errors.New("No data")
+		return nil, errors.New("no data")
 	}
 
 	// Marshall to JSON
@@ -111,10 +113,7 @@ func (s CharacterService) SearchCharacterWithCache(ctx context.Context, searchSt
 
 	// Store in cache
 	cacheKey := "search:" + searchString
-	err = s.InsertCharactersIntoCache(ctx, cacheKey, jsonEncoding, redis.CACHE_TTL_LONG)
-	if err != nil {
-		return nil, err
-	}
+	_ = s.InsertCharactersIntoCache(ctx, cacheKey, jsonEncoding, redis.CACHE_TTL_LONG)
 
 	return jsonEncoding, nil
 }

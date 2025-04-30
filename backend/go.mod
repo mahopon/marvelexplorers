@@ -6,7 +6,7 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/jackc/pgx/v5 v5.7.4
 	github.com/joho/godotenv v1.5.1
-	github.com/mahopon/gobackend v0.0.0-20250420102158-8e2f75a0233d
+	github.com/mahopon/gobackend v0.0.0-20250430185843-aff49598b21c
 )
 
 require (
