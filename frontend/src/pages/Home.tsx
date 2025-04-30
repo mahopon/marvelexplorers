@@ -1,8 +1,8 @@
-import React,{useState, useEffect, useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import CharacterCard from "../components/CharacterCard.tsx";
 import "../styles/animations.css";
 import "../styles/CharacterCard.css";
-import {Character} from "../interfaces/CharacterInterface.tsx"
+import { Character } from "../types/character.ts"
 import SearchBar from "../components/SearchBar.tsx";
 import CharacterDetails from "../components/CharacterDetails.tsx";
 import useCharacterFetch from "../hooks/useFetchCharacter.tsx";
@@ -29,16 +29,19 @@ const Home: React.FC = () => {
     useEffect(() => {
         // Load initial characters
         debouncedLoad()
-      }, [])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     useEffect(() => {
         // Initial data fetch
         handleScroll(containerRef);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [characters]);
 
     useEffect(() => {
         checkOverflow(containerRef)
-      }, [characters])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [characters])
 
     return (
         <>
@@ -50,16 +53,16 @@ const Home: React.FC = () => {
                 <h2>Choose your character!</h2>
                 <SearchBar onSearch={debouncedSearch} />
                 <div className="charTab" ref={containerRef} onScroll={() => {
-                        if (containerRef.current) {
-                            handleScroll(containerRef);
-                        }
-                    }}>
+                    if (containerRef.current) {
+                        handleScroll(containerRef);
+                    }
+                }}>
                     {(filteredCharacters.length > 0 ? filteredCharacters : characters).map((char) => (
-                            <CharacterCard
-                              key={char.id}
-                              character={char}
-                              onClick={selectChar}
-                            />))
+                        <CharacterCard
+                            key={char.id}
+                            character={char}
+                            onClick={selectChar}
+                        />))
                     }
                     { /* Skeleton loading */
                         loading && Array(5).fill(0).map((_, index) => (
@@ -78,8 +81,8 @@ const Home: React.FC = () => {
             </section>
             {selectedChar && (
                 <CharacterDetails
-                  character = {selectedChar}
-                  setSelectedChar={setSelectedChar}
+                    character={selectedChar}
+                    setSelectedChar={setSelectedChar}
                 ></CharacterDetails>
             )}
         </>
