@@ -23,6 +23,7 @@ const useCharacterFetch = () => {
                     ...newChars.map((char) => ({
                         id: char.ID,
                         name: char.Name,
+                        description: char.Description,
                         resourceURI: char.ResourceURI,
                         thumbnailPath: char.ThumbnailPath,
                         thumbnailExtension: char.ThumbnailExtension,
@@ -52,6 +53,7 @@ const useCharacterFetch = () => {
                     ...filteredChars.map((char) => ({
                         id: char.ID,
                         name: char.Name,
+                        description: char.Description,
                         resourceURI: char.ResourceURI,
                         thumbnailPath: char.ThumbnailPath,
                         thumbnailExtension: char.ThumbnailExtension,
