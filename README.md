@@ -10,4 +10,4 @@ A pet project meant to explore Marvel Comic characters
 
 ## Down again
 
-As of 3/5/25, the marvel API is down again 😴
+As of 3/5/25, the marvel API is down again 😴. I'm unable to get data for comics and series.
