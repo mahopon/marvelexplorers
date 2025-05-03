@@ -7,3 +7,7 @@ A pet project meant to explore Marvel Comic characters
 2. Postgresql database
 3. React
 4. Redis for API cache
+
+## Down again
+
+As of 3/5/25, the marvel API is down again 😴
